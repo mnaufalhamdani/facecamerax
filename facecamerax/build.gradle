@@ -1,6 +1,7 @@
 plugins {
     id "com.android.library"
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -64,4 +65,20 @@ dependencies {
     implementation('id.zelory:compressor:3.0.1')
     //Dimen
     implementation 'com.intuit.sdp:sdp-android:1.1.0'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                // Replace with your own group ID.
+                groupId 'com.github.mnaufalhamdani'
+                // Replace with the name of your library
+                artifactId 'facecamerax'
+                version '1.0.0'
+            }
+        }
+    }
 }

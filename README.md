@@ -13,7 +13,7 @@ Face camera is a module for cameras with face and location detection using suppo
 # Preview
 
 
-   Main Sample    |  Camera with No Face Detection  | Camera with No Face Detection |
+   Main Sample    |  Camera with No Face Detection  | Camera with Face Detection |
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](https://github.com/mnaufalhamdani/facecamerax/blob/master/image/photo_2023-03-17_10-02-52.jpg)  |  ![](https://github.com/mnaufalhamdani/facecamerax/blob/master/image/photo_2023-03-17_10-03-00.jpg)  |  ![](https://github.com/mnaufalhamdani/facecamerax/blob/master/image/photo_2023-03-17_10-03-03.jpg)
 

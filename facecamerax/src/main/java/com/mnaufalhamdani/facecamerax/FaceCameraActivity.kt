@@ -8,8 +8,8 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import com.mnaufalhamdani.facecamerax.utils.CameraResult
 import com.mnaufalhamdani.facecamerax.databinding.ActivityFaceCameraBinding
+import com.mnaufalhamdani.facecamerax.utils.CameraResult
 import java.io.File
 
 class FaceCameraActivity : AppCompatActivity(), CameraResult {

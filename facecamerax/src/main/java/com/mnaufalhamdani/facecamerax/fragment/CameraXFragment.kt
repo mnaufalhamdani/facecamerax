@@ -25,7 +25,6 @@ import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LATITUDE
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LENS_CAMERA
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LONGITUDE
 import com.mnaufalhamdani.facecamerax.R
-import com.mnaufalhamdani.facecamerax.utils.CameraResult
 import com.mnaufalhamdani.facecamerax.core.FaceContourDetectionProcessor
 import com.mnaufalhamdani.facecamerax.core.LocationLiveData
 import com.mnaufalhamdani.facecamerax.databinding.FragmentCameraBinding
@@ -96,9 +95,10 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             if (lensCamera == 1) CameraSelector.DEFAULT_FRONT_CAMERA
             else CameraSelector.DEFAULT_BACK_CAMERA
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        }else Toast.makeText(binding.root.context, "Permission Denied", Toast.LENGTH_SHORT).show()
+        onRunPermission(
+            listenerGranted = { startCamera() },
+            listenerDeny = { Toast.makeText(binding.root.context, "Please allow all permissions", Toast.LENGTH_SHORT).show() }
+        )
 
         binding.viewFinder.setOnTouchListener { _, event ->
             val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(

@@ -5,15 +5,14 @@ plugins {
 }
 
 android {
-    namespace 'com.mnaufalhamdani.facecamerax'
-    compileSdk 33
+    namespace versions.applicationModuleId
+    compileSdk versions.compileSdk
 
     defaultConfig {
-        minSdk 21
-        //noinspection ExpiredTargetSdkVersion
-        targetSdk 29
-        versionCode 1
-        versionName "1.0"
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,6 +64,8 @@ dependencies {
     implementation('id.zelory:compressor:3.0.1')
     //Dimen
     implementation 'com.intuit.sdp:sdp-android:1.1.0'
+    //Permission
+    implementation 'com.karumi:dexter:6.2.3'
 }
 
 afterEvaluate {

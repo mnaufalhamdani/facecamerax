@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace 'com.example.customcamerax'
-    compileSdk 33
+    namespace versions.applicationId
+    compileSdk versions.compileSdk
 
     defaultConfig {
-        applicationId "com.example.customcamerax"
-        minSdk 21
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        applicationId versions.applicationId
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

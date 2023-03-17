@@ -4,3 +4,15 @@ plugins {
     id 'com.android.library' version '7.4.1' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.0' apply false
 }
+
+ext {
+    versions = [
+            'applicationId'         : "com.example.customcamerax",
+            'applicationModuleId'   : "com.mnaufalhamdani.facecamerax",
+            'minSdk'                : 21,
+            'compileSdk'            : 33,
+            'targetSdk'             : 29,
+            'versionCode'           : 1,
+            'versionName'           : "1.0.1",
+    ]
+}

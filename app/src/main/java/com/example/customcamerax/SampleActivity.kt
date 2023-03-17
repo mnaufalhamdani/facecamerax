@@ -9,22 +9,26 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
+import com.example.customcamerax.databinding.ActivitySampleBinding
 import com.google.android.material.button.MaterialButton
 import com.mnaufalhamdani.facecamerax.FaceCameraX
+import com.mnaufalhamdani.facecamerax.databinding.ActivityFaceCameraBinding
 
 class SampleActivity : AppCompatActivity() {
-    private lateinit var btn: MaterialButton
-    private lateinit var tvPath: TextView
+    private lateinit var binding: ActivitySampleBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sample)
-        btn = findViewById(R.id.btn_capture)
-        tvPath = findViewById(R.id.tv_path)
+        binding = ActivitySampleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        btn.setOnClickListener {
+        binding.btnCapture.setOnClickListener {
             FaceCameraX.with(this)
-                .coordinat(-7.2891684, 112.6756733)
-                .defaultCamera(FaceCameraX.LensCamera.LENS_BACK_CAMERA)
+                .compress(80)//Default compress is 80
+                .coordinat(-7.2891684, 112.6756733)//Default coordinat is 0.0
+                .defaultCamera(FaceCameraX.LensCamera.LENS_BACK_CAMERA)//Default camera is Front Camera
+                .isFaceDetection(true)//Default is true
+                .isWaterMark(true)//Default is true
                 .start(0)
         }
     }
@@ -45,7 +49,7 @@ class SampleActivity : AppCompatActivity() {
 
     private fun processImage(uri: Uri) {
         val path = uri.toFile().absolutePath
-        tvPath.text = path
+        binding.tvPath.text = path
     }
 
 }

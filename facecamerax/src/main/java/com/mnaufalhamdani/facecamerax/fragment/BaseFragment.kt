@@ -15,6 +15,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.snackbar.Snackbar
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.CompositeMultiplePermissionsListener
+import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener
 import com.mnaufalhamdani.facecamerax.R
 import java.io.File
 
@@ -56,18 +64,6 @@ abstract class BaseFragment<B : ViewBinding>(private val fragmentLayout: Int) : 
         }
     }
 
-    private val permissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        if (permissions.all { it.value }) {
-            onPermissionGranted()
-        } else {
-            view?.let { v ->
-                Snackbar.make(v, R.string.message_no_permissions, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.label_ok) { ActivityCompat.finishAffinity(requireActivity()) }
-                    .show()
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -83,20 +79,47 @@ abstract class BaseFragment<B : ViewBinding>(private val fragmentLayout: Int) : 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (allPermissionsGranted()) {
-            onPermissionGranted()
-        } else {
-            permissionRequest.launch(permissions.toTypedArray())
+    abstract fun onBackPressed()
+
+    protected fun onRunPermission(listenerGranted: (() -> Unit)?=null,
+                                  listenerDeny: (() -> Unit)?=null) {
+        activity?.let {
+            val view = it.findViewById<View>(android.R.id.content)
+            Dexter.withActivity(it)
+                .withPermissions(permissions)
+                .withListener(
+                    CompositeMultiplePermissionsListener(
+                        SnackbarOnAnyDeniedMultiplePermissionsListener.Builder
+                            .with(view, "The application needs this permission")
+                            .withOpenSettingsButton("Setting")
+                            .withDuration(Snackbar.LENGTH_INDEFINITE)
+                            .build(),
+                        DialogOnAnyDeniedMultiplePermissionsListener.Builder
+                            .withContext(binding.root.context)
+                            .withTitle("The application needs this permission")
+                            .withMessage("Please allow all permissions")
+                            .withButtonText(android.R.string.ok)
+                            .build(),
+                        object : MultiplePermissionsListener {
+                            override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                                report?.let { multiplePermissionReport ->
+                                    if (multiplePermissionReport.areAllPermissionsGranted()) {
+                                        listenerGranted?.invoke()
+                                    } else {
+                                        listenerDeny?.invoke()
+                                    }
+                                }
+                            }
+
+                            override fun onPermissionRationaleShouldBeShown(
+                                permissions: MutableList<PermissionRequest>?,
+                                token: PermissionToken?
+                            ) {
+                                token?.continuePermissionRequest()
+                            }
+                        }
+                    )
+                ).onSameThread().check()
         }
     }
-
-    protected fun allPermissionsGranted() = permissions.all {
-        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
-    }
-
-    open fun onPermissionGranted() = Unit
-
-    abstract fun onBackPressed()
 }

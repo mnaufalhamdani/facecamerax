@@ -96,9 +96,10 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             if (lensCamera == 1) CameraSelector.DEFAULT_FRONT_CAMERA
             else CameraSelector.DEFAULT_BACK_CAMERA
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        }else Toast.makeText(binding.root.context, "Permission Denied", Toast.LENGTH_SHORT).show()
+        onRunPermission(
+            listenerGranted = { startCamera() },
+            listenerDeny = { Toast.makeText(binding.root.context, "Please allow all permissions", Toast.LENGTH_SHORT).show() }
+        )
 
         binding.viewFinder.setOnTouchListener { _, event ->
             val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(

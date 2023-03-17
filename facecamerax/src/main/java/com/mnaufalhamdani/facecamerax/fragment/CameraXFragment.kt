@@ -25,7 +25,6 @@ import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LATITUDE
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LENS_CAMERA
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LONGITUDE
 import com.mnaufalhamdani.facecamerax.R
-import com.mnaufalhamdani.facecamerax.utils.CameraResult
 import com.mnaufalhamdani.facecamerax.core.FaceContourDetectionProcessor
 import com.mnaufalhamdani.facecamerax.core.LocationLiveData
 import com.mnaufalhamdani.facecamerax.databinding.FragmentCameraBinding

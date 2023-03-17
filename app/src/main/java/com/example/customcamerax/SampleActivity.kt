@@ -6,13 +6,10 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import com.example.customcamerax.databinding.ActivitySampleBinding
-import com.google.android.material.button.MaterialButton
 import com.mnaufalhamdani.facecamerax.FaceCameraX
-import com.mnaufalhamdani.facecamerax.databinding.ActivityFaceCameraBinding
 
 class SampleActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySampleBinding

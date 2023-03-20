@@ -41,12 +41,12 @@ Face camera is a module for cameras with face and location detection using suppo
 
 	```kotlin
     FaceCameraX.with(this)
-    	    .customPath("YOUR_PATH")					  //Custom path photo
-            .compress(80)                                                 //Default compress is 80
-            .coordinat(0.0, 0.0)		                          //Default coordinat is 0.0
-            .defaultCamera(FaceCameraX.LensCamera.LENS_BACK_CAMERA)       //Default camera is Front Camera
-            .isFaceDetection(true)                                        //Default is true
-            .isWaterMark(true)                                            //Default is true
+    	.customPath("YOUR_PATH")					//Custom path photo
+            .compress(80)							//Default compress is 80
+            .coordinat(0.0, 0.0)		                          	//Default coordinat is 0.0
+            .defaultCamera(FaceCameraX.LensCamera.LENS_BACK_CAMERA)      	//Default camera is Front Camera
+            .isFaceDetection(true)                                        	//Default is true
+            .isWaterMark(true)                                            	//Default is true
             .start()  
     ```
     

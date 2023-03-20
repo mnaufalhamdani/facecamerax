@@ -6,10 +6,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import com.example.customcamerax.databinding.ActivitySampleBinding
 import com.mnaufalhamdani.facecamerax.FaceCameraX
+import com.mnaufalhamdani.facecamerax.R
 
 class SampleActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySampleBinding
@@ -21,6 +24,7 @@ class SampleActivity : AppCompatActivity() {
 
         binding.btnCapture.setOnClickListener {
             FaceCameraX.with(this)
+                .customPath(Environment.getExternalStorageDirectory().toString() + "/")
                 .compress(80)//Default compress is 80
                 .coordinat(-7.2891684, 112.6756733)//Default coordinat is 0.0
                 .defaultCamera(FaceCameraX.LensCamera.LENS_BACK_CAMERA)//Default camera is Front Camera

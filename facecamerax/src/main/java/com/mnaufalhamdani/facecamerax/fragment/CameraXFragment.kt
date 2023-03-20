@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -18,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationRequest
+import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_CUSTOM_PATH
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IMAGE_MAX_SIZE
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IS_FACE_DETECTION
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IS_WATERMARK
@@ -49,6 +51,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
     private val latitude by lazy { arguments?.getDouble(EXTRA_LATITUDE) ?: 0.0 }
     private val longitude by lazy { arguments?.getDouble(EXTRA_LONGITUDE) ?: 0.0 }
     private val lensCamera by lazy { arguments?.getInt(EXTRA_LENS_CAMERA) ?: 1 }
+    private val customPath by lazy { arguments?.getString(EXTRA_CUSTOM_PATH) ?: outputDirectory }
     private val isFaceDetection by lazy { arguments?.getBoolean(EXTRA_IS_FACE_DETECTION) ?: true }
     private val isWaterMark by lazy { arguments?.getBoolean(EXTRA_IS_WATERMARK) ?: true }
     private var mLatitude = 0.0
@@ -227,9 +230,11 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
 
         val imageCapture = imageCapture ?: return
 
-        setFolderDatabase(outputDirectory)
+        Log.d("SampleActivity1", customPath)
+
+        setFolderDatabase(customPath)
         val photoFile = File(
-            outputDirectory,
+            customPath,
             "IMG_" + SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg"
         )
 
@@ -260,7 +265,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                                 onResult.onImageResult(savedUri.toFile())
                             }
                         }else {
-                            compressFile(outputDirectory, binding.root.context, savedUri.toFile(), maxSize)?.let { newFile ->
+                            compressFile(customPath, binding.root.context, savedUri.toFile(), maxSize)?.let { newFile ->
                                 onResult.onImageResult(newFile)
                             } ?: onResult.onImageResult(savedUri.toFile())
                         }

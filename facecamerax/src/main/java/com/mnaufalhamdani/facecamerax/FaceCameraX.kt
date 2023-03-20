@@ -4,7 +4,9 @@ package com.mnaufalhamdani.facecamerax
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import androidx.fragment.app.Fragment
 import com.mnaufalhamdani.facecamerax.utils.singleClick
 
@@ -17,6 +19,7 @@ open class FaceCameraX {
         internal const val EXTRA_ERROR = "extra.error"
 
         internal const val EXTRA_IMAGE_MAX_SIZE = "EXTRA_IMAGE_MAX_SIZE"
+        internal const val EXTRA_CUSTOM_PATH = "EXTRA_CUSTOM_PATH"
         internal const val EXTRA_LATITUDE = "EXTRA_LATITUDE"
         internal const val EXTRA_LONGITUDE = "EXTRA_LONGITUDE"
         internal const val EXTRA_IS_FACE_DETECTION = "EXTRA_IS_FACE_DETECTION"
@@ -51,6 +54,7 @@ open class FaceCameraX {
     class Builder(private val activity: Activity) {
 
         private var fragment: Fragment? = null
+        private var path: String? = null
         private var maxSize: Int = 80
         private var latitude: Double = 0.0
         private var longitude: Double = 0.0
@@ -65,6 +69,10 @@ open class FaceCameraX {
             this.fragment = fragment
         }
 
+        fun customPath(path: String): Builder {
+            this.path = path
+            return this
+        }
         fun compress(maxSize: Int): Builder {
             this.maxSize = maxSize
             return this
@@ -103,6 +111,8 @@ open class FaceCameraX {
 
                 putInt(EXTRA_LENS_CAMERA, lensFacing)
                 putInt(EXTRA_IMAGE_MAX_SIZE, maxSize)
+
+                putString(EXTRA_CUSTOM_PATH, path)
 
                 putDouble(EXTRA_LATITUDE, latitude)
                 putDouble(EXTRA_LONGITUDE, longitude)

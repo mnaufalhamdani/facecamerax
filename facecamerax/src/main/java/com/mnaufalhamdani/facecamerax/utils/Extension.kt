@@ -8,7 +8,6 @@ import android.content.Context
 import android.graphics.*
 import android.location.Address
 import android.location.Geocoder
-import android.os.Environment
 import android.os.SystemClock
 import android.text.Layout
 import android.text.StaticLayout
@@ -193,7 +192,7 @@ suspend fun compressFile(
     isAddToGallery: Boolean = false
 ): File? {
     val folder =
-        File(Environment.getExternalStorageDirectory().toString() + "/$path")
+        File(path)
     var success = true
     if (!folder.exists()) {
         success = folder.mkdirs()

@@ -56,7 +56,6 @@ Face camera is a module for cameras with face and location detection using suppo
 
     ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-         super.onActivityResult(requestCode, resultCode, data)
          if (requestCode == 0) {
             if (resultCode == Activity.RESULT_OK) {
                 data?.let {

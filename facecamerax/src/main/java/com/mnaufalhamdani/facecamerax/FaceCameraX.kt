@@ -4,9 +4,7 @@ package com.mnaufalhamdani.facecamerax
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import androidx.fragment.app.Fragment
 import com.mnaufalhamdani.facecamerax.utils.singleClick
 
@@ -58,7 +56,7 @@ open class FaceCameraX {
         private var maxSize: Int = 80
         private var latitude: Double = 0.0
         private var longitude: Double = 0.0
-        private var lensFacing: Int = 1//0 = BACK CAMERA, 1 = FRONT CAMERA
+        private var lensFacing: LensCamera = LensCamera.LENS_FRONT_CAMERA//0 = BACK CAMERA, 1 = FRONT CAMERA
         private var isFaceDetection: Boolean = true
         private var isWaterMark: Boolean = true
 
@@ -85,7 +83,7 @@ open class FaceCameraX {
         }
 
         fun defaultCamera(lensCamera: LensCamera): Builder {
-            this.lensFacing = lensCamera.value
+            this.lensFacing = lensCamera
             return this
         }
 
@@ -109,7 +107,7 @@ open class FaceCameraX {
                 putBoolean(EXTRA_IS_FACE_DETECTION, isFaceDetection)
                 putBoolean(EXTRA_IS_WATERMARK, isWaterMark)
 
-                putInt(EXTRA_LENS_CAMERA, lensFacing)
+                putInt(EXTRA_LENS_CAMERA, lensFacing.value)
                 putInt(EXTRA_IMAGE_MAX_SIZE, maxSize)
 
                 putString(EXTRA_CUSTOM_PATH, path)

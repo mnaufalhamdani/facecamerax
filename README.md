@@ -35,7 +35,7 @@ Face camera is a module for cameras with face and location detection using suppo
    implementation 'com.github.mnaufalhamdani:facecamerax:1.0.4'
     ```
 
-2. The ImagePicker configuration is created using the builder pattern.
+2. The Face Camera X configuration is created using the builder pattern.
 
 	**Kotlin**
 
@@ -52,11 +52,10 @@ Face camera is a module for cameras with face and location detection using suppo
     
 3. Handling results
 
-    **Override `onActivityResult` method and handle ImagePicker result.**
+    **Override `onActivityResult` method and handle Face Camera X result.**
 
     ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-         super.onActivityResult(requestCode, resultCode, data)
          if (requestCode == 0) {
             if (resultCode == Activity.RESULT_OK) {
                 data?.let {

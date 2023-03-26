@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "OPT_IN_IS_NOT_ENABLED")
 
 package com.mnaufalhamdani.facecamerax.utils
 

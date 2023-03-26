@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.mnaufalhamdani.facecamerax.utils.Constant
 import com.mnaufalhamdani.facecamerax.utils.singleClick
 
 open class FaceCameraX {
@@ -54,8 +55,8 @@ open class FaceCameraX {
         private var fragment: Fragment? = null
         private var path: String? = null
         private var maxSize: Int = 80
-        private var latitude: Double = 0.0
-        private var longitude: Double = 0.0
+        private var latitude: Double = Constant.latitude
+        private var longitude: Double = Constant.longitude
         private var lensFacing: LensCamera = LensCamera.LENS_FRONT_CAMERA//0 = BACK CAMERA, 1 = FRONT CAMERA
         private var isFaceDetection: Boolean = true
         private var isWaterMark: Boolean = true

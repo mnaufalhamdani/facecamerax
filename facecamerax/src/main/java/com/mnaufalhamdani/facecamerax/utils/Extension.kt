@@ -8,11 +8,11 @@ import android.content.Context
 import android.graphics.*
 import android.location.Address
 import android.location.Geocoder
+import android.os.Build
 import android.os.SystemClock
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
-import android.util.Base64
 import android.util.Log
 import android.widget.ImageButton
 import androidx.annotation.DrawableRes
@@ -26,6 +26,11 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+object Constant {
+    const val latitude = -6.7821934
+    const val longitude = 110.9887358
+}
 
 @OptIn(DelicateCoroutinesApi::class)
 fun ImageButton.toggleButton(
@@ -63,24 +68,21 @@ fun ImageButton.toggleButton(
     }
 }
 
-fun drawMultilineTextToBitmap(
-    gContext: Context,
-    gResId: Bitmap,
-    gText: String?,
-    textSize: Int?
-): Bitmap {
+fun drawMultilineTextToBitmap(context: Context, resId: Bitmap, waterMark: String?, textSize: Int?): Bitmap {
+    //set TextSize
     var mSize = textSize
     if (mSize == null) mSize = 12
 
     // prepare canvas
-    val resources = gContext.resources
+    val resources = context.resources
     val scale = resources.displayMetrics.density
-    var bitmap = gResId
+    var bitmap = resId
     var bitmapConfig = bitmap.config
     // set default bitmap config if none
     if (bitmapConfig == null) {
         bitmapConfig = Bitmap.Config.ARGB_8888
     }
+
     // resource bitmaps are imutable,
     // so we need to convert it to mutable one
     bitmap = bitmap.copy(bitmapConfig, true)
@@ -91,22 +93,18 @@ fun drawMultilineTextToBitmap(
     // text color - #3D3D3D
     paint.color = Color.WHITE
     // text size in pixels
-    paint.textSize = mSize * scale * 5
-    // text shadow
-    //paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-
+    paint.textSize = mSize * scale * 2
 
     // set text width to canvas width minus 16dp padding
     val textWidth = canvas.width - (16 * scale).toInt()
-
     // init StaticLayout for text
     val textLayout = StaticLayout(
-        gText, paint, textWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 2.0f, false
+        waterMark, paint, textWidth, Layout.Alignment.ALIGN_NORMAL,
+        1.0f, 2.0f, false
     )
 
     // get height of multiline text
     val textHeight = textLayout.height
-
     // get position of text's top left corner
     val x = (bitmap.width - textWidth) / 2
     val y = (bitmap.height - textHeight) * 98 / 100
@@ -119,9 +117,12 @@ fun drawMultilineTextToBitmap(
     return bitmap
 }
 
-fun convertStringToBitmap(imageString: String): Bitmap {
-    val decodedString = Base64.decode(imageString, Base64.NO_WRAP)
-    return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+fun convertPathToBitmap(imagePath: String): Bitmap {
+    var bitmap = BitmapFactory.decodeFile(imagePath)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        bitmap = rotateImage(bitmap, 270)
+    }
+    return bitmap
 }
 
 fun saveBitmap(path: String, bitmap: Bitmap, compressQuality: Int, listener: (Boolean) -> Unit) {
@@ -148,6 +149,14 @@ fun saveBitmap(path: String, bitmap: Bitmap, compressQuality: Int, listener: (Bo
     }
 }
 
+fun rotateImage(img: Bitmap, degree: Int): Bitmap {
+    val matrix = Matrix()
+    matrix.postRotate(degree.toFloat())
+    val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
+    img.recycle()
+    return rotatedImg
+}
+
 fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): AddressDomain? {
     val geocoder = Geocoder(context, Locale.getDefault())
     val addresses: List<Address>? = geocoder.getFromLocation(
@@ -167,7 +176,10 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): Ad
 //            knownName = addresses[0].featureName,
             latitude = latitude.toString(),
             longitude = longitude.toString(),
-            timeStamp = SimpleDateFormat(fileNameFormat, Locale.US).format(System.currentTimeMillis())
+            timeStamp = SimpleDateFormat(
+                fileNameFormat,
+                Locale.US
+            ).format(System.currentTimeMillis())
         )
     }
     return null
@@ -175,9 +187,9 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): Ad
 
 // TO PREVENT DOUBLE CLICK
 private var mLastClickTime: Long = 0
-fun singleClick():Boolean {
+fun singleClick(): Boolean {
     // mis-clicking prevention, using threshold of 1000 ms
-    if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+    if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
         return false
     }
     mLastClickTime = SystemClock.elapsedRealtime()
@@ -198,7 +210,7 @@ suspend fun compressFile(
         success = folder.mkdirs()
     }
     if (success) {
-        if (!isAddToGallery){
+        if (!isAddToGallery) {
             val file = File("${folder.path}/.nomedia")
             try {
                 withContext(Dispatchers.IO) {
@@ -209,7 +221,7 @@ suspend fun compressFile(
             }
         }
         try {
-            val imageCompress = Compressor.compress(context, imageFile){
+            val imageCompress = Compressor.compress(context, imageFile) {
                 quality(compressQuality)
                 destination(folder)
             }
@@ -218,7 +230,7 @@ suspend fun compressFile(
             Log.e("FileUtil", e.message.toString())
         }
     } else {
-        Log.e("FileUtil","Cannot Create Folder")
+        Log.e("FileUtil", "Cannot Create Folder")
     }
     return null
 }

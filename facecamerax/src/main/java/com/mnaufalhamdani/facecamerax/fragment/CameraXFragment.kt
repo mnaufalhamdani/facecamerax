@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -54,9 +53,8 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
     private val customPath by lazy { arguments?.getString(EXTRA_CUSTOM_PATH) ?: outputDirectory }
     private val isFaceDetection by lazy { arguments?.getBoolean(EXTRA_IS_FACE_DETECTION) ?: true }
     private val isWaterMark by lazy { arguments?.getBoolean(EXTRA_IS_WATERMARK) ?: true }
-    private var mLatitude = 0.0
-    private var mLongitude = 0.0
-    private var mAltitude = 0.0
+    private var mLatitude = Constant.latitude
+    private var mLongitude = Constant.longitude
 
     lateinit var onResult: CameraResult
     private var imageCapture: ImageCapture? = null
@@ -91,6 +89,8 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
         locationGPS = LocationLiveData(binding.root.context, pPriority = LocationRequest.PRIORITY_HIGH_ACCURACY)
         mLatitude = latitude
         mLongitude = longitude
+        val filePath = File(customPath)
+        if (!filePath.exists()) filePath.mkdirs()
 
         onResult = binding.root.context as CameraResult
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -100,7 +100,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
 
         onRunPermission(
             listenerGranted = { startCamera() },
-            listenerDeny = { Toast.makeText(binding.root.context, "Please allow all permissions", Toast.LENGTH_SHORT).show() }
+            listenerDeny = { Toast.makeText(binding.root.context, it, Toast.LENGTH_SHORT).show() }
         )
 
         binding.viewFinder.setOnTouchListener { _, event ->
@@ -123,7 +123,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             true
         }
 
-        if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude, mAltitude)
+        if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude)
         if (!isFaceDetection) binding.btnTakePicture.visibility = View.VISIBLE
         binding.btnTakePicture.setOnClickListener {
             if (isFaceDetection){
@@ -153,12 +153,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             it?.let {
                 mLatitude = it.latitude
                 mLongitude = it.longitude
-                mAltitude = it.altitude
-                if (isWaterMark) binding.tvWatermark.text = setLocation(
-                    mLatitude,
-                    mLongitude,
-                    mAltitude
-                )
+                if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude)
             }
         }
     }
@@ -238,7 +233,13 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             "IMG_" + SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg"
         )
 
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+        val metadata = ImageCapture.Metadata().apply {
+            isReversedHorizontal = lensFacing == CameraSelector.DEFAULT_FRONT_CAMERA
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
+            .setMetadata(metadata)
+            .build()
 
         imageCapture.takePicture(
             outputOptions,
@@ -252,11 +253,10 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                     lifecycleScope.launch {
                         val savedUri = Uri.fromFile(photoFile)
                         if (isWaterMark){
-                            val convertBmp = BitmapFactory.decodeFile(savedUri.toFile().absolutePath)
                             val bitmap = drawMultilineTextToBitmap(
                                 binding.root.context,
-                                convertBmp,
-                                setLocation(mLatitude, mLongitude, mAltitude),
+                                convertPathToBitmap(savedUri.toFile().absolutePath),
+                                setLocation(mLatitude, mLongitude).toString(),
                                 12
                             )
                             saveBitmap(savedUri.toFile().absolutePath, bitmap, maxSize) {
@@ -312,13 +312,13 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
         binding.llFlashOptions.visibility = View.GONE
     }
 
-    private fun setLocation(latitude: Double, longitude: Double, mAltitude: Double): String? {
+    private fun setLocation(latitude: Double, longitude: Double): String? {
         val address = getAddressFromGPS(binding.root.context, latitude, longitude)
         if (address != null) {
             var text = ""
             text += address.address
             text += "\n"
-            text += "Lat : ${address.latitude}, Lon : ${address.longitude}, Alt : ${String.format("%.1f", mAltitude).toDouble()}m"
+            text += "Lat : ${address.latitude}, Lon : ${address.longitude}"
             text += "\n"
             text += address.timeStamp
             return text

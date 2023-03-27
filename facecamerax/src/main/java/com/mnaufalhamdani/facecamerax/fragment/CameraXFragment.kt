@@ -126,15 +126,31 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
         if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude)
         if (!isFaceDetection) binding.btnTakePicture.visibility = View.VISIBLE
         binding.btnTakePicture.setOnClickListener {
+            if (!singleClick()) return@setOnClickListener
             if (isFaceDetection){
                 if (binding.graphicOverlay.isFaceDetected.value == true) takePhoto()
             }else takePhoto()
         }
-        binding.btnSwitchCamera.setOnClickListener { toggleCamera() }
-        binding.btnFlashCamera.setOnClickListener { selectFlash() }
-        binding.btnFlashOff.setOnClickListener { closeFlashAndSelect(ImageCapture.FLASH_MODE_OFF) }
-        binding.btnFlashOn.setOnClickListener { closeFlashAndSelect(ImageCapture.FLASH_MODE_ON) }
-        binding.btnFlashAuto.setOnClickListener { closeFlashAndSelect(ImageCapture.FLASH_MODE_AUTO) }
+        binding.btnSwitchCamera.setOnClickListener {
+            if (!singleClick()) return@setOnClickListener
+            toggleCamera()
+        }
+        binding.btnFlashCamera.setOnClickListener {
+            if (!singleClick()) return@setOnClickListener
+            selectFlash()
+        }
+        binding.btnFlashOff.setOnClickListener {
+            if (!singleClick()) return@setOnClickListener
+            closeFlashAndSelect(ImageCapture.FLASH_MODE_OFF)
+        }
+        binding.btnFlashOn.setOnClickListener {
+            if (!singleClick()) return@setOnClickListener
+            closeFlashAndSelect(ImageCapture.FLASH_MODE_ON)
+        }
+        binding.btnFlashAuto.setOnClickListener {
+            if (!singleClick()) return@setOnClickListener
+            closeFlashAndSelect(ImageCapture.FLASH_MODE_AUTO)
+        }
 
         observeVM()
     }

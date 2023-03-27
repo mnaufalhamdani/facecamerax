@@ -32,7 +32,7 @@ Face camera is a module for cameras with face and location detection using suppo
 	```
 
     ```groovy
-   implementation 'com.github.mnaufalhamdani:facecamerax:1.0.7'
+   implementation 'com.github.mnaufalhamdani:facecamerax:1.0.8'
     ```
 
 2. The Face Camera X configuration is created using the builder pattern.

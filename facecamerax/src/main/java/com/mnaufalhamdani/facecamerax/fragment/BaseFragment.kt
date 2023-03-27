@@ -53,15 +53,11 @@ abstract class BaseFragment<B : ViewBinding>(private val fragmentLayout: Int) : 
     // The permissions we need for the app to work properly
     private val permissions = mutableListOf(
         Manifest.permission.CAMERA,
-        Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE,
-    ).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            add(Manifest.permission.ACCESS_MEDIA_LOCATION)
-        }
-    }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -81,7 +77,7 @@ abstract class BaseFragment<B : ViewBinding>(private val fragmentLayout: Int) : 
     abstract fun onBackPressed()
 
     protected fun onRunPermission(listenerGranted: (() -> Unit)?=null,
-                                  listenerDeny: (() -> Unit)?=null) {
+                                  listenerDeny: ((String) -> Unit)?=null) {
         activity?.let {
             val view = it.findViewById<View>(android.R.id.content)
             Dexter.withActivity(it)
@@ -105,7 +101,11 @@ abstract class BaseFragment<B : ViewBinding>(private val fragmentLayout: Int) : 
                                     if (multiplePermissionReport.areAllPermissionsGranted()) {
                                         listenerGranted?.invoke()
                                     } else {
-                                        listenerDeny?.invoke()
+                                        var text = "Please Allowed: "
+                                        multiplePermissionReport.deniedPermissionResponses.map {
+                                            text += it.permissionName + ", "
+                                        }
+                                        listenerDeny?.invoke(text.substring(0, text.length - 2))
                                     }
                                 }
                             }

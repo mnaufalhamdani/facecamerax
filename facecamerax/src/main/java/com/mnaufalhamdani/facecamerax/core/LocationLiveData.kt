@@ -48,7 +48,6 @@ class LocationLiveData(context: Context, pInterval: Long = 5000, pFastestInterva
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            locationResult ?: return
             for (location in locationResult.locations) {
                 setLocationData(location)
             }

@@ -127,6 +127,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
         if (!isFaceDetection) binding.btnTakePicture.visibility = View.VISIBLE
         binding.btnTakePicture.setOnClickListener {
             if (!singleClick()) return@setOnClickListener
+            binding.btnTakePicture.isEnabled = false
             if (isFaceDetection){
                 if (binding.graphicOverlay.isFaceDetected.value == true) takePhoto()
             }else takePhoto()
@@ -262,11 +263,13 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             cameraExecutor,
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
+                    binding.btnTakePicture.isEnabled = true
                     onResult.onResulError(exc.message.toString())
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     lifecycleScope.launch {
+                        binding.btnTakePicture.isEnabled = true
                         val savedUri = Uri.fromFile(photoFile)
                         if (isWaterMark){
                             val bitmap = drawMultilineTextToBitmap(

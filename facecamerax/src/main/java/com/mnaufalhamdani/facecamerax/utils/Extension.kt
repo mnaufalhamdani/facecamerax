@@ -221,9 +221,11 @@ suspend fun compressFile(
             }
         }
         try {
+            val fileName = imageFile.name
+            val newPath = File(path + fileName)
             val imageCompress = Compressor.compress(context, imageFile) {
                 quality(compressQuality)
-                destination(folder)
+                destination(newPath)
             }
             return imageCompress
         } catch (e: Exception) {

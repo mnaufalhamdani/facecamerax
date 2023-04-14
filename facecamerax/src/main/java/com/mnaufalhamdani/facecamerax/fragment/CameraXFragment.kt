@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.camera.core.*
+import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile

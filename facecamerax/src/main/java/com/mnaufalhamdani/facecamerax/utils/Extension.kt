@@ -5,9 +5,11 @@ package com.mnaufalhamdani.facecamerax.utils
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
 import android.text.Layout
@@ -125,16 +127,27 @@ fun convertPathToBitmap(imagePath: String): Bitmap {
     return bitmap
 }
 
-fun saveBitmap(path: String, bitmap: Bitmap, compressQuality: Int, listener: (Boolean) -> Unit) {
-    val file = File(path)
+fun saveBitmap(context: Context, path: String, bitmap: Bitmap, compressQuality: Int, pathGallery: String, isAddToGallery: Boolean = false, listener: (Boolean) -> Unit) {
     try {
+        val file = File(path)
         if (file.exists()) {
             file.delete()
+        }
+        if (!isAddToGallery) {
+            try {
+                context.apply {
+                    val gFile = File("$pathGallery.nomedia")
+                    gFile.createNewFile()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
         val out = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, out)
         out.flush()
         out.close()
+        if (isAddToGallery) galleryAddPic(context, file)
     } catch (e: IOException) {
         listener(false)
         e.printStackTrace()
@@ -155,6 +168,16 @@ fun rotateImage(img: Bitmap, degree: Int): Bitmap {
     val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
     img.recycle()
     return rotatedImg
+}
+
+@Throws(IOException::class)
+fun galleryAddPic(context: Context, file: File?) {
+    val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+    file?.let {
+        val contentUri = Uri.fromFile(file)
+        mediaScanIntent.data = contentUri
+    }
+    context.sendBroadcast(mediaScanIntent)
 }
 
 fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): AddressDomain? {
@@ -211,20 +234,23 @@ suspend fun compressFile(
     }
     if (success) {
         if (!isAddToGallery) {
-            val file = File("${folder.path}/.nomedia")
             try {
-                withContext(Dispatchers.IO) {
-                    file.createNewFile()
+                context.apply {
+                    val gFile = File("$path.nomedia")
+                    gFile.createNewFile()
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
         try {
+            val fileName = imageFile.name
+            val newPath = File(path + fileName)
             val imageCompress = Compressor.compress(context, imageFile) {
                 quality(compressQuality)
-                destination(folder)
+                destination(newPath)
             }
+            if (isAddToGallery) galleryAddPic(context, imageCompress)
             return imageCompress
         } catch (e: Exception) {
             Log.e("FileUtil", e.message.toString())

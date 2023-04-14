@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.camera.core.*
-import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
@@ -278,13 +277,13 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                                 setLocation(mLatitude, mLongitude).toString(),
                                 12
                             )
-                            saveBitmap(savedUri.toFile().absolutePath, bitmap, maxSize) {
+                            saveBitmap(binding.root.context, savedUri.toFile().absolutePath, bitmap, maxSize, customPath, isAddToGallery = true) {
                                 if (!it)
                                     Toast.makeText(binding.root.context, "Photo save failed", Toast.LENGTH_SHORT).show()
                                 onResult.onImageResult(savedUri.toFile())
                             }
                         }else {
-                            compressFile(customPath, binding.root.context, savedUri.toFile(), maxSize)?.let { newFile ->
+                            compressFile(customPath, binding.root.context, savedUri.toFile(), maxSize, isAddToGallery = true)?.let { newFile ->
                                 onResult.onImageResult(newFile)
                             } ?: onResult.onImageResult(savedUri.toFile())
                         }

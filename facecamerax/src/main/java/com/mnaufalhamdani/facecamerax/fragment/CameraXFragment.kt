@@ -17,6 +17,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.LocationRequest
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_CUSTOM_PATH
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IMAGE_MAX_SIZE
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IS_FACE_DETECTION
@@ -26,6 +27,7 @@ import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LENS_CAMERA
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LONGITUDE
 import com.mnaufalhamdani.facecamerax.R
 import com.mnaufalhamdani.facecamerax.core.FaceContourDetectionProcessor
+import com.mnaufalhamdani.facecamerax.core.LocationLiveData
 import com.mnaufalhamdani.facecamerax.databinding.FragmentCameraBinding
 import com.mnaufalhamdani.facecamerax.utils.*
 import kotlinx.coroutines.launch
@@ -42,7 +44,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
         private const val FILENAME_FORMAT = "yyyyMMddHHmmss"
     }
 
-//    private lateinit var locationGPS: LocationLiveData
+    private lateinit var locationGPS: LocationLiveData
 
     private val maxSize by lazy { arguments?.getInt(EXTRA_IMAGE_MAX_SIZE) ?: 80 }
     private val latitude by lazy { arguments?.getDouble(EXTRA_LATITUDE) ?: 0.0 }
@@ -84,7 +86,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
     @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        locationGPS = LocationLiveData(binding.root.context, pPriority = LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationGPS = LocationLiveData(binding.root.context, pPriority = LocationRequest.PRIORITY_HIGH_ACCURACY)
         mLatitude = latitude
         mLongitude = longitude
         val filePath = File(customPath)
@@ -164,13 +166,13 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                 }
         }
 
-//        locationGPS.observe(viewLifecycleOwner){
-//            it?.let {
-//                mLatitude = it.latitude
-//                mLongitude = it.longitude
-//                if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude)
-//            }
-//        }
+        locationGPS.observe(viewLifecycleOwner){
+            it?.let {
+                mLatitude = it.latitude
+                mLongitude = it.longitude
+                if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude)
+            }
+        }
     }
 
     private fun selectAnalyzer(): ImageAnalysis.Analyzer {

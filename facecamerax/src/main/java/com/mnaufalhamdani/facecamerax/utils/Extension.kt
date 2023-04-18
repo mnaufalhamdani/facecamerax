@@ -181,31 +181,35 @@ fun galleryAddPic(context: Context, file: File?) {
 }
 
 fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): AddressDomain? {
-    val geocoder = Geocoder(context, Locale.getDefault())
-    val addresses: List<Address>? = geocoder.getFromLocation(
-        latitude,
-        longitude,
-        1
-    ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+    try {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val addresses: List<Address>? = geocoder.getFromLocation(
+            latitude,
+            longitude,
+            1
+        ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
-    if (!addresses.isNullOrEmpty()) {
-        val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
-        return AddressDomain(
-            address = addresses[0].getAddressLine(0),
+        if (!addresses.isNullOrEmpty()) {
+            val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
+            return AddressDomain(
+                address = addresses[0].getAddressLine(0),
 //            city = addresses[0].locality,
 //            state = addresses[0].adminArea,
 //            country = addresses[0].countryName,
 //            postalCode = addresses[0].postalCode,
 //            knownName = addresses[0].featureName,
-            latitude = latitude.toString(),
-            longitude = longitude.toString(),
-            timeStamp = SimpleDateFormat(
-                fileNameFormat,
-                Locale.US
-            ).format(System.currentTimeMillis())
-        )
+                latitude = latitude.toString(),
+                longitude = longitude.toString(),
+                timeStamp = SimpleDateFormat(
+                    fileNameFormat,
+                    Locale.US
+                ).format(System.currentTimeMillis())
+            )
+        }else return null
+    }catch (e: Exception){
+        Log.e("getAddressFromGPS", e.message.toString())
+        return null
     }
-    return null
 }
 
 // TO PREVENT DOUBLE CLICK

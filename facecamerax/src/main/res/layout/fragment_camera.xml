@@ -52,12 +52,11 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:padding="10dp"
-        android:src="@drawable/ic_take_picture"
+        android:src="@drawable/ic_take_picture_foreground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="ContentDescription"
-        app:tint="@color/black"/>
+        tools:ignore="ContentDescription" />
 
     <ImageButton
         android:id="@+id/btnTakePicture"

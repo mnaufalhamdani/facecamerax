@@ -263,7 +263,6 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             cameraExecutor,
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    binding.btnTakePicture.isEnabled = true
                     onResult.onResulError(exc.message.toString())
                 }
 

@@ -271,15 +271,22 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                         binding.btnTakePicture.isEnabled = true
                         val savedUri = Uri.fromFile(photoFile)
                         if (isWaterMark){
+                            val converBitmap = convertPathToBitmap(savedUri, binding.root.context)
+                            if (converBitmap == null) {
+                                onResult.onResulError("Gagal decode file")
+                                return@launch
+                            }
                             val bitmap = drawMultilineTextToBitmap(
                                 binding.root.context,
-                                convertPathToBitmap(savedUri.toFile().absolutePath),
+                                converBitmap,
                                 setLocation(mLatitude, mLongitude).toString(),
                                 12
                             )
                             saveBitmap(binding.root.context, savedUri.toFile().absolutePath, bitmap, maxSize, customPath, isAddToGallery = true) {
-                                if (!it)
+                                if (!it){
                                     Toast.makeText(binding.root.context, "Photo save failed", Toast.LENGTH_SHORT).show()
+                                    return@saveBitmap
+                                }
                                 onResult.onImageResult(savedUri.toFile())
                             }
                         }else {

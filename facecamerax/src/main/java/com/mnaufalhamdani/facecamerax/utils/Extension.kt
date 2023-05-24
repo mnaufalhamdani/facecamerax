@@ -12,6 +12,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
@@ -22,9 +23,7 @@ import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.destination
 import id.zelory.compressor.constraint.quality
 import kotlinx.coroutines.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -119,12 +118,21 @@ fun drawMultilineTextToBitmap(context: Context, resId: Bitmap, waterMark: String
     return bitmap
 }
 
-fun convertPathToBitmap(imagePath: String): Bitmap {
-    var bitmap = BitmapFactory.decodeFile(imagePath)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        bitmap = rotateImage(bitmap, 270)
+fun convertPathToBitmap(imagePath: Uri, context: Context): Bitmap? {
+    try {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, imagePath)
+        } else {
+            val source: ImageDecoder.Source = ImageDecoder.createSource(context.contentResolver, imagePath)
+            ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                decoder.isMutableRequired = true
+            }
+        }
+    }catch (e: Exception){
+        Log.d("convertPathToBitmap", e.message.toString())
+        return null
     }
-    return bitmap
 }
 
 fun saveBitmap(context: Context, path: String, bitmap: Bitmap, compressQuality: Int, pathGallery: String, isAddToGallery: Boolean = false, listener: (Boolean) -> Unit) {

@@ -195,6 +195,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
 
             imageAnalyzer = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setImageQueueDepth(1)
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, selectAnalyzer())

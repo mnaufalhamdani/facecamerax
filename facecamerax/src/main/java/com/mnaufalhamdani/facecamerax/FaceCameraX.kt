@@ -4,6 +4,7 @@ package com.mnaufalhamdani.facecamerax
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.mnaufalhamdani.facecamerax.utils.Constant
@@ -90,6 +91,8 @@ open class FaceCameraX {
 
         fun isFaceDetection(isFaceDetection: Boolean): Builder {
             this.isFaceDetection = isFaceDetection
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
+                this.isFaceDetection = false
             return this
         }
 

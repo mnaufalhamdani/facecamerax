@@ -201,11 +201,6 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): Ad
             val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
             return AddressDomain(
                 address = addresses[0].getAddressLine(0),
-//            city = addresses[0].locality,
-//            state = addresses[0].adminArea,
-//            country = addresses[0].countryName,
-//            postalCode = addresses[0].postalCode,
-//            knownName = addresses[0].featureName,
                 latitude = latitude.toString(),
                 longitude = longitude.toString(),
                 timeStamp = SimpleDateFormat(
@@ -215,8 +210,16 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): Ad
             )
         }else return null
     }catch (e: Exception){
-        Log.e("getAddressFromGPS", e.message.toString())
-        return null
+        val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
+        return AddressDomain(
+            address = e.message.toString(),
+            latitude = "-",
+            longitude = "-",
+            timeStamp = SimpleDateFormat(
+                fileNameFormat,
+                Locale.US
+            ).format(System.currentTimeMillis())
+        )
     }
 }
 

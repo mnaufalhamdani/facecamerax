@@ -188,7 +188,8 @@ fun galleryAddPic(context: Context, file: File?) {
     context.sendBroadcast(mediaScanIntent)
 }
 
-fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): AddressDomain? {
+fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double, ): AddressDomain? {
+    val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
     try {
         val geocoder = Geocoder(context, Locale.getDefault())
         val addresses: List<Address>? = geocoder.getFromLocation(
@@ -198,7 +199,6 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): Ad
         ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
         if (!addresses.isNullOrEmpty()) {
-            val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
             return AddressDomain(
                 address = addresses[0].getAddressLine(0),
                 latitude = latitude.toString(),
@@ -210,7 +210,7 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double): Ad
             )
         }else return null
     }catch (e: Exception){
-        val fileNameFormat = "dd-MM-yyyy HH:mm:ss"
+        Log.e("getAddressFromGPS", e.message.toString())
         return AddressDomain(
             address = e.message.toString(),
             latitude = "-",

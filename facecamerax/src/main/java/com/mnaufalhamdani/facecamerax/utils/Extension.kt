@@ -212,7 +212,7 @@ fun getAddressFromGPS(context: Context, latitude: Double, longitude: Double, ): 
     }catch (e: Exception){
         Log.e("getAddressFromGPS", e.message.toString())
         return AddressDomain(
-            address = e.message.toString(),
+            address = "Alamat tidak diketahui, mohon muat ulang dan pastikan koneksi internet Anda stabil.",
             latitude = "-",
             longitude = "-",
             timeStamp = SimpleDateFormat(

@@ -3,7 +3,6 @@
 package com.mnaufalhamdani.facecamerax.fragment
 
 import android.annotation.SuppressLint
-import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -11,8 +10,16 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.camera.core.*
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfoUnavailableException
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.MeteringPointFactory
+import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
@@ -20,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationRequest
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_CUSTOM_PATH
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IMAGE_MAX_SIZE
+import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IS_ADDITIONALWATERMARK
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IS_FACE_DETECTION
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_IS_WATERMARK
 import com.mnaufalhamdani.facecamerax.FaceCameraX.Companion.EXTRA_LATITUDE
@@ -29,11 +37,20 @@ import com.mnaufalhamdani.facecamerax.R
 import com.mnaufalhamdani.facecamerax.core.FaceContourDetectionProcessor
 import com.mnaufalhamdani.facecamerax.core.LocationLiveData
 import com.mnaufalhamdani.facecamerax.databinding.FragmentCameraBinding
-import com.mnaufalhamdani.facecamerax.utils.*
+import com.mnaufalhamdani.facecamerax.utils.CameraResult
+import com.mnaufalhamdani.facecamerax.utils.Constant
+import com.mnaufalhamdani.facecamerax.utils.compressFile
+import com.mnaufalhamdani.facecamerax.utils.convertPathToBitmap
+import com.mnaufalhamdani.facecamerax.utils.drawAddMultilineTextToBitmap
+import com.mnaufalhamdani.facecamerax.utils.drawMultilineTextToBitmap
+import com.mnaufalhamdani.facecamerax.utils.getAddressFromGPS
+import com.mnaufalhamdani.facecamerax.utils.saveBitmap
+import com.mnaufalhamdani.facecamerax.utils.singleClick
+import com.mnaufalhamdani.facecamerax.utils.toggleButton
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
@@ -53,6 +70,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
     private val customPath by lazy { arguments?.getString(EXTRA_CUSTOM_PATH) ?: outputDirectory }
     private val isFaceDetection by lazy { arguments?.getBoolean(EXTRA_IS_FACE_DETECTION) ?: true }
     private val isWaterMark by lazy { arguments?.getBoolean(EXTRA_IS_WATERMARK) ?: true }
+    private val additionalWaterMark by lazy { arguments?.getString(EXTRA_IS_ADDITIONALWATERMARK) }
     private var mLatitude = Constant.latitude
     private var mLongitude = Constant.longitude
 
@@ -123,6 +141,11 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
             true
         }
 
+        binding.tvAdditionalWatermark.visibility = View.GONE
+        if (!additionalWaterMark.isNullOrEmpty()) {
+            binding.tvAdditionalWatermark.visibility = View.VISIBLE
+            binding.tvAdditionalWatermark.text = additionalWaterMark
+        }
         if (isWaterMark) binding.tvWatermark.text = setLocation(mLatitude, mLongitude)
         if (!isFaceDetection) binding.btnTakePicture.visibility = View.VISIBLE
         binding.btnTakePicture.setOnClickListener {
@@ -280,15 +303,33 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                                 binding.root.context,
                                 converBitmap,
                                 setLocation(mLatitude, mLongitude).toString(),
-                                12
+                                14
                             )
-                            saveBitmap(binding.root.context, savedUri.toFile().absolutePath, bitmap, maxSize, customPath, isAddToGallery = true) {
-                                if (!it){
-                                    Toast.makeText(binding.root.context, "Photo save failed", Toast.LENGTH_SHORT).show()
-                                    return@saveBitmap
+
+                            if (!additionalWaterMark.isNullOrEmpty()) {
+                                val addBitmap = drawAddMultilineTextToBitmap(
+                                    binding.root.context,
+                                    bitmap,
+                                    additionalWaterMark,
+                                    30
+                                )
+                                saveBitmap(binding.root.context, savedUri.toFile().absolutePath, addBitmap, maxSize, customPath, isAddToGallery = true) {
+                                    if (!it){
+                                        Toast.makeText(binding.root.context, "Photo save failed", Toast.LENGTH_SHORT).show()
+                                        return@saveBitmap
+                                    }
+                                    onResult.onImageResult(savedUri.toFile())
                                 }
-                                onResult.onImageResult(savedUri.toFile())
+                            }else {
+                                saveBitmap(binding.root.context, savedUri.toFile().absolutePath, bitmap, maxSize, customPath, isAddToGallery = true) {
+                                    if (!it){
+                                        Toast.makeText(binding.root.context, "Photo save failed", Toast.LENGTH_SHORT).show()
+                                        return@saveBitmap
+                                    }
+                                    onResult.onImageResult(savedUri.toFile())
+                                }
                             }
+
                         }else {
                             compressFile(customPath, binding.root.context, savedUri.toFile(), maxSize, isAddToGallery = true)?.let { newFile ->
                                 onResult.onImageResult(newFile)

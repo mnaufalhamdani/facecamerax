@@ -26,9 +26,10 @@ class SampleActivity : AppCompatActivity() {
                 .customPath(Environment.getExternalStorageDirectory().toString() + "/TestCam/")
                 .compress(50)//Default compress is 80
                 .coordinat(-7.2891684, 112.6756733)//Default coordinat is 0.0
-                .defaultCamera(FaceCameraX.LensCamera.LENS_FRONT_CAMERA)//Default camera is Front Camera
-                .isFaceDetection(true)//Default is true
+                .defaultCamera(FaceCameraX.LensCamera.LENS_BACK_CAMERA)//Default camera is Front Camera
+                .isFaceDetection(false)//Default is true
                 .isWaterMark(true)//Default is true
+                .additionalWaterMark("Anda berada pada ketinggian 200m")
                 .start(0)
         }
     }

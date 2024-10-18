@@ -23,6 +23,7 @@ open class FaceCameraX {
         internal const val EXTRA_LONGITUDE = "EXTRA_LONGITUDE"
         internal const val EXTRA_IS_FACE_DETECTION = "EXTRA_IS_FACE_DETECTION"
         internal const val EXTRA_IS_WATERMARK = "EXTRA_IS_WATERMARK"
+        internal const val EXTRA_IS_ADDITIONALWATERMARK = "EXTRA_IS_ADDITIONALWATERMARK"
         internal const val EXTRA_LENS_CAMERA = "EXTRA_LENS_CAMERA"
 
         /**
@@ -60,6 +61,7 @@ open class FaceCameraX {
         private var lensFacing: LensCamera = LensCamera.LENS_FRONT_CAMERA//0 = BACK CAMERA, 1 = FRONT CAMERA
         private var isFaceDetection: Boolean = true
         private var isWaterMark: Boolean = true
+        private var additionalWaterMark: String? = null
 
         /**
          * Call this while picking image for fragment.
@@ -98,6 +100,11 @@ open class FaceCameraX {
             return this
         }
 
+        fun additionalWaterMark(additionalWaterMark: String?): Builder {
+            this.additionalWaterMark = additionalWaterMark
+            return this
+        }
+
         fun start(reqCode: Int) {
             if (!singleClick()) return
             startActivity(reqCode)
@@ -107,6 +114,7 @@ open class FaceCameraX {
             return Bundle().apply {
                 putBoolean(EXTRA_IS_FACE_DETECTION, isFaceDetection)
                 putBoolean(EXTRA_IS_WATERMARK, isWaterMark)
+                putString(EXTRA_IS_ADDITIONALWATERMARK, additionalWaterMark)
 
                 putInt(EXTRA_LENS_CAMERA, lensFacing.value)
                 putInt(EXTRA_IMAGE_MAX_SIZE, maxSize)

@@ -311,7 +311,7 @@ class CameraXFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_ca
                                     binding.root.context,
                                     bitmap,
                                     additionalWaterMark,
-                                    30
+                                    28
                                 )
                                 saveBitmap(binding.root.context, savedUri.toFile().absolutePath, addBitmap, maxSize, customPath, isAddToGallery = true) {
                                     if (!it){

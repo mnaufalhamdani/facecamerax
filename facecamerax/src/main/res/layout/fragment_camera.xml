@@ -35,7 +35,7 @@
         android:background="@color/overlay_dark_50"
         android:layout_marginBottom="@dimen/_20sdp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/tv_watermark"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible"/>

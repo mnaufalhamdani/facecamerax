@@ -159,7 +159,7 @@ fun drawAddMultilineTextToBitmap(context: Context, resId: Bitmap, additionalWate
     val textHeight = textLayout.height
     // get position of text's top left corner
     val x = 0
-    val y = (bitmap.height - textHeight) * 85 / 100
+    val y = 0
 
     val textBackgroundPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.overlay_dark_50)
